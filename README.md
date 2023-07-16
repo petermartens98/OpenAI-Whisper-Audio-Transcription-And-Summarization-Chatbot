@@ -2,6 +2,12 @@
 ### Description
 Python Streamlit web app enabling users to upload audio files and then utilize OpenAI (Whisper, GPT-4 to generate audio transcriptions, and summarizations. Users can then chat about these transcriptions. Data (user id, passwords, file name, transcript, summary, messages) are then stored in an SQLite DB for user login and later data retrieval.
 
+### App V5 Screenshot
+#### Implemented GPT-4 ChatBot Functionality
+![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/f73747dc-0db7-480a-bcda-0ac390a920b1)
+
+
+
 ### App V4 Screenshots
 #### App V4 Login Page
 ![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-App/assets/87671757/22335942-5277-4f0a-8c8c-9eb54a465d37)
