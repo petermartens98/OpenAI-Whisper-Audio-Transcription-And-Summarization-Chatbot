@@ -4,7 +4,8 @@ Python Streamlit web app enabling users to upload audio files and then utilize O
 
 ### App V5 Screenshot
 #### Implemented GPT-4 ChatBot Functionality
-![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/f73747dc-0db7-480a-bcda-0ac390a920b1)
+![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/388abd0a-07f0-42ed-87e1-1b9196678e83)
+
 
 
 
