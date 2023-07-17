@@ -11,6 +11,12 @@ Web app enabling users to either record or upload audio files. Then utilizing Op
 6. Text Analysis: NLTK
 7. DB and User Auth: SQLite
 
+
+### App V8 Screenshot
+#### Implement option for user to record their own audio
+![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/a2c56da0-9f98-4175-88fc-361c9f4e9909)
+
+
 ### App V7 Screenshot
 #### Implement GPT-4 Sentiment Reports of Transcriptions
 ![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/3c3ae66f-e38b-4026-86b4-b920e131ea2b)
