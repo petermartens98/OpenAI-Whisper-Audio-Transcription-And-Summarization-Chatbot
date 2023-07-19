@@ -12,6 +12,12 @@ Web app enabling users to either record or upload audio files. Then utilizing Op
 7. DB and User Auth: SQLite
 
 
+### App V9 Screenshot
+#### Implemented Transcription Fact Checking
+##### From JRE - Neil DeGrasse Tyson - https://www.youtube.com/shorts/y9RowvoU43Q
+![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/1511331a-ab38-4f3f-a6c7-ea2b6d016fa2)
+
+
 ### App V8 Screenshot
 #### Implement option for user to record their own audio
 ![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/a2c56da0-9f98-4175-88fc-361c9f4e9909)
