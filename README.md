@@ -1,7 +1,7 @@
 # OpenAI Whisper Audio Transcription and Summarization Chatbot
 ### Description
 
-Web app enabling users to either record or upload audio files. Then utilizing OpenAI API (Whisper, GPT-4) generates audio transcriptions, summarizations, sentiment analysis, and text metrics. Users can then also intelligently chat about their transcriptions with a GPT4 bot. Data is stored in an SQLite DB for user login and later data retrieval.
+Web app enabling users to either record or upload audio files. Then utilizing OpenAI API (Whisper, GPT4) generates transcriptions, summaries, fact checks, sentiment analysis, and text metrics. Users can also intelligently chat about their transcriptions with a GPT4 chatbot. Data is stored in an SQLite DB for user login and later data retrieval.
 
 ### Technologies Utilized
 1. Programming Languages: Python, HTML, CSS
