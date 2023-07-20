@@ -1,7 +1,7 @@
 # OpenAI Whisper Audio Transcription and Summarization Chatbot
 ### Description
 
-Web app enabling users to either record or upload audio files. Then utilizing OpenAI API (Whisper, GPT4) generates transcriptions, summaries, fact checks, sentiment analysis, and text metrics. Users can also intelligently chat about their transcriptions with a GPT4 chatbot. Data is stored in an SQLite DB for user login and later data retrieval.
+Web app enabling users to record or upload audio files, utilizing OpenAI API (Whisper, GPT-4) and custom agents/ tools with LangChain to generate transcriptions, summaries, fact checks, sentiment analysis, and text metrics. Additionally, users can interact with a GPT4 chatbot about their transcriptions. Data is stored in an SQLite DB for user authentication and later retrieval. Data is also embedded into a Pinecone vector DB, for LLM purposes.
 
 ### Technologies Utilized
 1. Programming Languages: Python, HTML, CSS
@@ -9,7 +9,10 @@ Web app enabling users to either record or upload audio files. Then utilizing Op
 3. Audio Transcription: OpenAI API (Whisper)
 5. LLM: OpenAI API (GPT-4), LangChain
 6. Text Analysis: NLTK
-7. DB and User Auth: SQLite
+7. Vector DB
+8. Relational DB and User Auth: SQLite
+
+### App V10 implemented a Pinecone DB utilizing OpenAI Embedding, and and implemented as optional reference tool for LangChain Zero Shot React Description agent.
 
 
 ### App V9 Screenshot
