@@ -5,19 +5,12 @@ import os
 import re
 import pinecone
 import openai
-import chromadb
-from supabase import create_client, Client
-from langchain.vectorstores import Chroma
 import pandas as pd
 from collections import Counter
-import vecs
-import supabase
-from pytube import YouTube
 import plotly
 import plotly.graph_objs as go
-from pytube import YouTube
-from youtube_dl import YoutubeDL
-import youtube_dl
+from langchain.tools import PubmedQueryRun
+from langchain import LLMMathChain
 from langchain.vectorstores import Chroma, Pinecone
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
@@ -139,53 +132,71 @@ def get_word_frequency(text):
     return df_word_freq
 
 
+def define_tools():
+    embedding_function = OpenAIEmbeddings()
+    index_name='index1'
+    llm = OpenAI(temperature=0.65, model_name="gpt-4")
+    wiki = WikipediaAPIWrapper()
+    DDGsearch = DuckDuckGoSearchRun()
+    YTsearch = YouTubeSearchTool()
+    pubmed = PubmedQueryRun()
+    llm_math_chain = LLMMathChain(llm=llm, verbose=True)
+    vectorstore = Pinecone.from_existing_index(index_name, embedding_function)
+    qa = VectorDBQA.from_chain_type(llm=llm,
+                                    vectorstore=vectorstore)
+    tools = [
+        Tool(
+            name = "Wikipedia Research Tool",
+            func=wiki.run,
+            description="Useful for researching older information and checking facts on wikipedia"
+        ),
+        Tool(
+            name = "DuckDuckGo Internet Search Tool",
+            func = DDGsearch.run,
+            description="Useful for researching newer information and checking facts on the internet"
+        ),
+        Tool(
+            name = "YouTube Links Tool",
+            func = YTsearch.run,
+            description="Useful for gathering links on YouTube"
+        ),
+        Tool(
+            name='Vector-Based Previous Transcript / Information Database Tool',
+            func=qa.run,
+            description='Provides access to previous transcripts and related data'
+        ),
+        Tool(
+            name ='Calculator and Math Tool',
+            func=llm_math_chain.run,
+            description='Useful for mathematical questions and operations'
+        ),
+        Tool(
+            name='Pubmed Science and Medical Journal Research Tool',
+            func=pubmed.run,
+            description='Useful for Pubmed science and medical research\nPubMed comprises more than 35 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full text content from PubMed Central and publisher web sites.'
+
+        )
+    ]
+    return tools
+
 
 
 def main():
     st.set_page_config(page_title="Whisper Transcription ChatBot")
     st.write(css, unsafe_allow_html=True)
-
     pinecone.init(api_key=os.getenv('PINECONE_API_KEY'), environment=os.getenv('PINECONE_ENVIORNMENT'))
     index_name='index1'
-    index = pinecone.Index(index_name)
-    embedding_function = OpenAIEmbeddings()
-
-
     create_db()
     init_session_states()
     st.title("OpenAI Transcription Tool")
     user_authentication_tab()
     if st.session_state.user_authenticated:
-
+        tools = define_tools()
+        embedding_function = OpenAIEmbeddings()
         llm = OpenAI(temperature=0.65, model_name="gpt-4")
-        wiki = WikipediaAPIWrapper()
-        DDGsearch = DuckDuckGoSearchRun()
-        YTsearch = YouTubeSearchTool()
         vectorstore = Pinecone.from_existing_index(index_name, embedding_function)
         qa = VectorDBQA.from_chain_type(llm=llm,
-                                        vectorstore=vectorstore)
-        tools = [
-            Tool(
-                name = "Wikipedia Research Tool",
-                func=wiki.run,
-                description="Useful for researching older information and checking facts on wikipedia"
-            ),
-            Tool(
-                name = "DuckDuckGo Internet Search Tool",
-                func = DDGsearch.run,
-                description="Useful for researching newer information and checking facts on the internet"
-            ),
-            Tool(
-                name = "YouTube Links Tool",
-                func = YTsearch.run,
-                description="Useful for gathering links on YouTube"
-            ),
-            Tool(
-                name='Vector-Based Previous Transcript / Information Database Tool',
-                func=qa.run,
-                description='Provides access to previous transcripts and related data'
-            )
-        ]
+                                        vectorstore=vectorstore)    
         memory = ConversationBufferMemory(memory_key="chat_history")
         zsrd_agent = initialize_agent(tools, 
                                     llm, 
