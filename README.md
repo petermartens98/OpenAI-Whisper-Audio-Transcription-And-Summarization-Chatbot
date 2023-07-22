@@ -9,7 +9,7 @@ Web app enabling users to record or upload audio files, utilizing OpenAI API (Wh
 3. Audio Transcription: OpenAI API (Whisper)
 5. LLM: OpenAI API (GPT-4), LangChain
 6. Text Analysis: NLTK
-7. Vector DB
+7. Vector DB: Pinecone
 8. Relational DB and User Auth: SQLite
 
 ### App V10 implemented a Pinecone DB utilizing OpenAI Embedding, and and implemented as optional reference tool for LangChain Zero Shot React Description agent.
