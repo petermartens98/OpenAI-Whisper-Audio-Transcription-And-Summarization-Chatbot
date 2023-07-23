@@ -313,6 +313,15 @@ def text_stats():
         st.dataframe(get_word_frequency(transcript), height=200, width=300)
 
 
+# sidebar function
+def sidebar():
+    global TEMP, MODEL
+    with st.sidebar:
+        with st.expander("Settings", expanded=True):
+            TEMP = st.slider(label='LLM Temperature', min_value=0.0, max_value=1.0, value=0.7)
+            MODEL = st.selectbox(label='LLM Model', options=['gpt-4','gpt-3.5-turbo'])
+
+
 # Main Function
 
 def main():
@@ -328,7 +337,8 @@ def main():
     st.title("OpenAI Transcription Tool")
     user_authentication_tab()
     if st.session_state.user_authenticated:
-        llm = OpenAI(temperature=0.65, model_name="gpt-4")
+        sidebar()
+        llm = OpenAI(temperature=TEMP, model_name=MODEL)
         embedding_function = OpenAIEmbeddings()
         vectorstore = Pinecone.from_existing_index(index_name, embedding_function)
         qa = VectorDBQA.from_chain_type(llm=llm,vectorstore=vectorstore) 
