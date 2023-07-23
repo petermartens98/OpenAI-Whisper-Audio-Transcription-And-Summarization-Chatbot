@@ -12,6 +12,8 @@ Web app enabling users to record or upload audio files, utilizing OpenAI API (Wh
 7. Vector DB: Pinecone
 8. Relational DB and User Auth: SQLite
 
+### App V12: Much Improved Code Modularity
+
 ### App V11: Improved Code Logic, Faster Response Times, Improved Rendering
 
 ### App V10: Implemented a Pinecone DB utilizing OpenAI Embedding, and and implemented as optional reference tool for LangChain Zero Shot React Description agent.
