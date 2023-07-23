@@ -12,7 +12,7 @@ Web app enabling users to record or upload audio files, utilizing OpenAI API (Wh
 7. Vector DB: Pinecone
 8. Relational DB and User Auth: SQLite
 
-### App V12: Much Improved Code Modularity
+### App V12: Implemented Sidebar for LLM Temperature and Model Selection & Much Improved Code Modularity
 
 ### App V11: Improved Code Logic, Faster Response Times, Improved Rendering
 
