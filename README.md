@@ -13,8 +13,6 @@ Web app enabling users to record or upload audio files, utilizing OpenAI API (Wh
 8. Relational DB and User Auth: SQLite
 
 ### App V12: Implemented Sidebar for LLM Temperature and Model Selection & Much Improved Code Modularity
-![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/8b08ad7d-d4d9-47b2-be0d-4a6887af841f)
-
 
 ![image](https://github.com/petermartens98/OpenAI-Whisper-Audio-Transcription-And-Summarization-Chatbot/assets/87671757/5c822c4f-1763-4be7-ac90-03927e2bbfb2)
 
