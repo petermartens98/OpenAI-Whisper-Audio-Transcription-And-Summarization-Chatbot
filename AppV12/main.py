@@ -41,7 +41,6 @@ from htmlTemplates import css, user_template, bot_template
 # TODO: Improve Pinecone MetaData and Organization
 
 
-
 def approve_password(password):
     if len(password) >= 8 and re.search(r"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_@$#!?&*%])", password):
         return True
