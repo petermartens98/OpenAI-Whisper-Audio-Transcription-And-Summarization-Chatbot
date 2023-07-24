@@ -38,10 +38,10 @@ from htmlTemplates import css, user_template, bot_template
 
 # TODO: Segment Audion: Insert time stamps into transcription
 
+# TODO: Improve Pinecone MetaData and Organization
 
-# TODO: Sidebar: Temp, Model
 
-    
+
 def approve_password(password):
     if len(password) >= 8 and re.search(r"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[_@$#!?&*%])", password):
         return True
@@ -181,18 +181,9 @@ def define_tools():
     ]
     return tools
 
-
-def map_reduce_summarize_text(input):
-    try:
-        text_splitter = CharacterTextSplitter()
-        texts = text_splitter.split_text(input)
-        docs = [Document(page_content=t) for t in texts]
-        chain = load_summarize_chain(llm, chain_type="map_reduce")
-        return chain.run(docs)
-    except Exception as e:
-        return(f"An error occured: {e}")
     
 
+# Upload audio files for file or voice
 def upload_audio_tab():
     global uploaded_file
     os.makedirs(upload_dir, exist_ok=True)
@@ -215,6 +206,7 @@ def upload_audio_tab():
             uploaded_file = file_path
 
 
+# Audio File Processing
 def process_file():
     with st.spinner('Processing File...'):
         if isinstance(uploaded_file, str):
@@ -228,10 +220,34 @@ def process_file():
 
 # Audio Transcription
 
+# GPT4 Audio Post Processing
+def generate_corrected_transcript(transcript):
+    system_prompt = '''
+        You are a helpful AI assistant, intended to fix any spelling or grammar mistakes in user audio transcript.
+        \nIf words appear incorrect or there are run-on word, fix the transcript the best you can.   
+    '''
+    response = openai.ChatCompletion.create(
+        model=MODEL,
+        temperature=TEMP,
+        messages=[
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": transcript
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+
 def transcribe_audio():
     with st.spinner('Transcribing Audio...'): 
         with open(st.session_state.audio_file_path, 'rb') as audio_file:
-            st.session_state.transcript = openai.Audio.transcribe("whisper-1", audio_file)['text']
+            transcript = openai.Audio.transcribe("whisper-1", audio_file)['text']
+            st.session_state.transcript = generate_corrected_transcript(transcript)
 
 
 def display_transcript():
@@ -241,6 +257,16 @@ def display_transcript():
 
 
 # Transcript Summarization
+
+def map_reduce_summarize_text(input):
+    try:
+        text_splitter = CharacterTextSplitter()
+        texts = text_splitter.split_text(input)
+        docs = [Document(page_content=t) for t in texts]
+        chain = load_summarize_chain(llm, chain_type="map_reduce")
+        return chain.run(docs)
+    except Exception as e:
+        return(f"An error occured: {e}")
 
 def summarize_transcript():
     with st.spinner("Generting Summary..."):
@@ -256,6 +282,7 @@ def display_summary():
 # Fact Check Transcript
 
 def fact_check_transcript():
+    zsrd_agent = create_zrsd_agent()
     with st.spinner("Fact Checking..."):
         st.session_state.fact_check = zsrd_agent.run(fact_check_prompt.format(st.session_state.transcript, st.session_state.transcript_summary))
     
@@ -322,11 +349,46 @@ def sidebar():
             MODEL = st.selectbox(label='LLM Model', options=['gpt-4','gpt-3.5-turbo'])
 
 
+def display_results():
+    display_transcript()
+    display_summary()
+    display_fact_check()
+    display_sentiment()
+    display_qa()
+    text_stats()
+
+
+def generate_and_display_results():
+    transcribe_audio()
+    display_transcript()
+    summarize_transcript()
+    display_summary()
+    fact_check_transcript()
+    display_fact_check()
+    analyze_sentiment()
+    display_sentiment()
+    qa_search()
+    display_qa()
+    text_stats()
+
+
+def create_zrsd_agent():
+    tools = define_tools()
+    memory = ConversationBufferMemory(memory_key="chat_history")
+    zsrd_agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True, memory=memory)
+    return zsrd_agent
+
+
+def create_qa():
+    embedding_function = OpenAIEmbeddings()
+    vectorstore = Pinecone.from_existing_index(index_name, embedding_function)
+    return VectorDBQA.from_chain_type(llm=llm,vectorstore=vectorstore)
+
+
 # Main Function
 
 def main():
-    global zsrd_agent, qa, llm, is_prev_tab, uploaded_file, upload_dir
-    
+    global qa,  llm, is_prev_tab, uploaded_file, upload_dir, index_name
     upload_dir = 'uploads'
     st.set_page_config(page_title="Whisper Transcription ChatBot")
     st.write(css, unsafe_allow_html=True)
@@ -340,35 +402,18 @@ def main():
         sidebar()
         llm = OpenAI(temperature=TEMP, model_name=MODEL)
         embedding_function = OpenAIEmbeddings()
-        vectorstore = Pinecone.from_existing_index(index_name, embedding_function)
-        qa = VectorDBQA.from_chain_type(llm=llm,vectorstore=vectorstore) 
-        tools = define_tools()
-        memory = ConversationBufferMemory(memory_key="chat_history")
-        zsrd_agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True, memory=memory)
-
+        qa =  create_qa()
         chat_llm_chain = LLMChain(llm=llm, prompt=chat_template)
-
         create_tab, prev_tab = st.tabs(["Create Transcription","Previous Transctiptions"])
         with create_tab:
             is_prev_tab = False
             upload_audio_tab() 
-            
             if uploaded_file is not None:
                 if st.button("Generate Transcript and Summary"):
                     st.session_state.chat_history = []
                     process_file()
                     st.subheader(st.session_state.audio_file_path.split("\\")[1])
-                    transcribe_audio()
-                    display_transcript()
-                    summarize_transcript()
-                    display_summary()
-                    fact_check_transcript()
-                    display_fact_check()
-                    analyze_sentiment()
-                    display_sentiment()
-                    qa_search()
-                    display_qa()
-                    text_stats()
+                    generate_and_display_results()
                     insert_into_transcripts(file_name=(st.session_state.audio_file_path.split("\\")[1]),
                                             transcription=st.session_state.transcript,
                                             transcription_summary=st.session_state.transcript_summary,
@@ -392,15 +437,8 @@ def main():
                         
 
                 if st.session_state.audio_file_path and st.session_state.transcript:
-                    
                     st.subheader(st.session_state.audio_file_path.split("\\")[1])
-                    display_transcript()
-                    display_summary()
-                    display_fact_check()
-                    display_sentiment()
-                    display_qa()
-                    text_stats()
-                            
+                    display_results()     
                     st.subheader("Chat with Transctiption")
                     user_message = st.text_input("User Message", key='unique_key1')
                     if st.button("Submit Message") and user_message:
@@ -437,13 +475,7 @@ def main():
                 # TODO: Render Previous Audio
             if st.session_state.prev_transcript:
                 st.subheader(st.session_state.prev_file_path)
-                display_transcript()
-                display_summary()
-                display_fact_check()
-                display_sentiment()
-                display_qa()
-                text_stats()
-                
+                display_results()
                 st.subheader("Chat with Transctiption")
                 pc_user_message = st.text_input("User Message", key='unique_key2')
                 if st.button("Submit Message", key="button2") and pc_user_message:
