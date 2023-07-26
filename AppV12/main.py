@@ -488,7 +488,7 @@ def main():
                         )
                         st.session_state.prev_chat_history.append(f"USER: {pc_user_message}")
                         st.session_state.prev_chat_history.append(f"AI: {ai_response}")
-                        # Store Messages in Sqlite and PineCone
+                        # TODO: Store Messages in Sqlite and PineCone
                         
                 if st.session_state.prev_chat_history:
                     display_prev_convo()
